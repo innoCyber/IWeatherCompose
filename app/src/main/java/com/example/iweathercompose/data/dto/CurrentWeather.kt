@@ -1,4 +1,4 @@
-package com.example.iweathercompose.data
+package com.example.iweathercompose.data.dto
 
 import com.google.gson.annotations.SerializedName
 
@@ -88,5 +88,3 @@ data class CurrentWeather(
         val speed: Double? = null
     )
 }
-
-
