@@ -17,10 +17,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.iweathercompose.R
 import com.example.iweathercompose.customUi.AppBackground
+import org.w3c.dom.Text
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WeatherHomeScreen(modifier: Modifier = Modifier) {
+fun WeatherHomeScreen(uiState: WeatherHomeUiState, modifier: Modifier = Modifier) {
 
     Box(
         modifier = modifier.fillMaxSize()
@@ -43,6 +44,11 @@ fun WeatherHomeScreen(modifier: Modifier = Modifier) {
                 modifier = modifier.padding(it).fillMaxSize().wrapContentSize()
             ) {
 
+                when(uiState){
+                    is WeatherHomeUiState.Error ->  TODO()
+                    is WeatherHomeUiState.Loading ->  TODO()
+                    is WeatherHomeUiState.Success -> TODO()
+                }
             }
         }
     }
@@ -52,5 +58,5 @@ fun WeatherHomeScreen(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun WeatherHomeScreenPreview() {
-    WeatherHomeScreen( )
+   // WeatherHomeScreen( )
 }
