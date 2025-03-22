@@ -10,9 +10,9 @@ import com.example.iweathercompose.ui.theme.Typography
 
 val appTypography = Typography(
 
-    displayLarge = Typography.bodyLarge.copy(fontFamily = appFontFamily, color = Color.White, fontSize = 100.sp),
-    displaySmall = Typography.bodyLarge.copy(fontFamily = appFontFamily, color = Color.White),
-    displayMedium = Typography.bodyLarge.copy(fontFamily = appFontFamily, color = Color.White),
+    displayLarge = Typography.displayLarge.copy(fontFamily = appFontFamily, color = Color.White, fontSize = 100.sp),
+    displaySmall = Typography.displaySmall.copy(fontFamily = appFontFamily, color = Color.White),
+    displayMedium = Typography.displayMedium.copy(fontFamily = appFontFamily, color = Color.White),
     bodyMedium = Typography.bodyMedium.copy(fontFamily = appFontFamily, color = Color.White),
     bodySmall = Typography.bodySmall.copy(fontFamily = appFontFamily, color = Color.White),
     bodyLarge = Typography.bodyLarge.copy(fontFamily = appFontFamily, color = Color.White),
