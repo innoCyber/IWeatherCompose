@@ -50,7 +50,11 @@ import java.nio.file.WatchEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WeatherHomeScreen(uiState: WeatherHomeUiState, modifier: Modifier = Modifier) {
+fun WeatherHomeScreen(
+    isNetworkAvailable: Boolean,
+    uiState: WeatherHomeUiState,
+    modifier: Modifier = Modifier
+) {
 
     Box(
         modifier = modifier.fillMaxSize()
@@ -76,10 +80,17 @@ fun WeatherHomeScreen(uiState: WeatherHomeUiState, modifier: Modifier = Modifier
                     .wrapContentSize()
             ) {
 
-                when (uiState) {
-                    is WeatherHomeUiState.Error -> Text("Error")
-                    is WeatherHomeUiState.Loading -> Text("Loading....")
-                    is WeatherHomeUiState.Success -> WeatherSection(uiState.weather)
+                if (isNetworkAvailable) {
+                    when (uiState) {
+                        is WeatherHomeUiState.Error -> Text("Error ")
+                        is WeatherHomeUiState.Loading -> Text("Loading....")
+                        is WeatherHomeUiState.Success -> WeatherSection(uiState.weather)
+                    }
+                } else {
+                    Text(
+                        "Network Connection Unavailable",
+                        style = MaterialTheme.typography.titleMedium
+                    )
                 }
             }
         }
@@ -170,25 +181,46 @@ fun ForeCastWeatherSection(
 }
 
 @Composable
-fun ForecastItems(forecastWeatherItem: ForecastWeather.ForecastItem, modifier: Modifier = Modifier) {
+fun ForecastItems(
+    forecastWeatherItem: ForecastWeather.ForecastItem,
+    modifier: Modifier = Modifier
+) {
 
-    Card( colors = CardDefaults.cardColors(containerColor = Color.Black.copy(alpha = 0.5f))) {
+    Card(colors = CardDefaults.cardColors(containerColor = Color.Black.copy(alpha = 0.5f))) {
 
-        Column(modifier = Modifier.padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            modifier = Modifier.padding(10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
-            Text( text = formattedDate(forecastWeatherItem.dt, "EEE"), style = MaterialTheme.typography.titleMedium)
-            Text(formattedDate(forecastWeatherItem.dt, pattern = "MMM dd"), style = MaterialTheme.typography.titleMedium)
-            Text(formattedDate(forecastWeatherItem.dt, "HH:mm"), style = MaterialTheme.typography.titleMedium)
-            Spacer(modifier = Modifier.height(10.dp))
-            AsyncImage(model = ImageRequest.Builder(LocalContext.current)
-                .data(getIconUrl(forecastWeatherItem.weather?.get(0)?.icon.toString()))
-                .crossfade(true)
-                .build(),
-                contentDescription = null,
-                modifier = Modifier.size(40.dp).padding(top = 4.dp, bottom = 4.dp)
+            Text(
+                text = formattedDate(forecastWeatherItem.dt, "EEE"),
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                formattedDate(forecastWeatherItem.dt, pattern = "MMM dd"),
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                formattedDate(forecastWeatherItem.dt, "HH:mm"),
+                style = MaterialTheme.typography.titleMedium
             )
             Spacer(modifier = Modifier.height(10.dp))
-            Text( text = "${forecastWeatherItem.main?.temp}$DEGREE", style = MaterialTheme.typography.titleMedium)
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(getIconUrl(forecastWeatherItem.weather?.get(0)?.icon.toString()))
+                    .crossfade(true)
+                    .build(),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(top = 4.dp, bottom = 4.dp)
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                text = "${forecastWeatherItem.main?.temp}$DEGREE",
+                style = MaterialTheme.typography.titleMedium
+            )
 
         }
     }

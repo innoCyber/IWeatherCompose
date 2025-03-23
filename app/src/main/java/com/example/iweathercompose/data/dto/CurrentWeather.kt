@@ -37,7 +37,7 @@ data class CurrentWeather(
 
     data class Coord(
         @SerializedName("lat")
-        val lat: Int? = null,
+        val lat: Double? = null,
         @SerializedName("lon")
         val lon: Double? = null
     )

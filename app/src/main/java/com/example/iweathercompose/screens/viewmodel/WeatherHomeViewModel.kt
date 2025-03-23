@@ -1,8 +1,6 @@
 package com.example.iweathercompose.screens.viewmodel
 
 import android.util.Log
-import android.util.Log.e
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,27 +8,36 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.iweathercompose.data.dto.CurrentWeather
 import com.example.iweathercompose.data.dto.ForecastWeather
+import com.example.iweathercompose.data.repository.DefaultNetworkConnectivityRepository
+import com.example.iweathercompose.data.repository.NetworkConnectivityRepository
 import com.example.iweathercompose.data.repository.WeatherRepository
 import com.example.iweathercompose.data.repository.WeatherRepositoryImpl
+import com.example.iweathercompose.screens.NetworkConnectivityState
 import com.example.iweathercompose.screens.Weather
 import com.example.iweathercompose.screens.WeatherHomeUiState
+import com.example.iweathercompose.utils.getCurrentWeatherUrl
+import com.example.iweathercompose.utils.getForecastWeatherUrl
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 
-class WeatherHomeViewModel (): ViewModel(){
+class WeatherHomeViewModel (private val networkConnectivityRepository: NetworkConnectivityRepository): ViewModel(){
     private val weatherRepository: WeatherRepository = WeatherRepositoryImpl()
     var uiState : WeatherHomeUiState by mutableStateOf(WeatherHomeUiState.Loading)
+    private var longitude : Number = 0.0
+    private var latitude : Number = 0.0
+    val networkConnectivityState: StateFlow<NetworkConnectivityState> = networkConnectivityRepository.networkConnectivityState
     val exceptionHandler = CoroutineExceptionHandler { _ , _ ->
         uiState = WeatherHomeUiState.Error
     }
 
     private suspend fun getCurrentWeather() : CurrentWeather{
-        return weatherRepository.getCurrentWeather()
+        return weatherRepository.getCurrentWeather(getCurrentWeatherUrl(latitude,longitude))
     }
     private suspend fun getForecastWeather() : ForecastWeather{
-        return weatherRepository.getForecastWeather()
+        return weatherRepository.getForecastWeather(getForecastWeatherUrl(latitude,longitude ))
     }
 
     fun getWeatherData(){
@@ -42,6 +49,13 @@ class WeatherHomeViewModel (): ViewModel(){
             }catch (e: Exception){
                 WeatherHomeUiState.Error
             }
+        }
+    }
+
+    fun setLocation(long: Number, lat: Number){
+        viewModelScope.launch {
+            longitude = long
+            latitude = lat
         }
     }
 }
