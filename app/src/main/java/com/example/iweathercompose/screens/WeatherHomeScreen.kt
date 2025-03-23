@@ -14,11 +14,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -52,6 +56,7 @@ import java.nio.file.WatchEvent
 @Composable
 fun WeatherHomeScreen(
     isNetworkAvailable: Boolean,
+    onRefresh: () -> Unit,
     uiState: WeatherHomeUiState,
     modifier: Modifier = Modifier
 ) {
@@ -82,7 +87,7 @@ fun WeatherHomeScreen(
 
                 if (isNetworkAvailable) {
                     when (uiState) {
-                        is WeatherHomeUiState.Error -> Text("Error ")
+                        is WeatherHomeUiState.Error -> ErrorUi("Failed to fetch weather data", onRefresh = onRefresh)
                         is WeatherHomeUiState.Loading -> Text("Loading....")
                         is WeatherHomeUiState.Success -> WeatherSection(uiState.weather)
                     }
@@ -96,6 +101,22 @@ fun WeatherHomeScreen(
         }
     }
 
+}
+
+@Composable
+fun ErrorUi(
+    message: String,
+    onRefresh: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column {
+        Text(message)
+        Spacer(modifier = Modifier.height(8.dp))
+        IconButton(onClick = onRefresh, modifier = Modifier.align(Alignment.CenterHorizontally)) {
+
+            Icon(Icons.Default.Refresh, contentDescription = null, tint = Color.White)
+        }
+    }
 }
 
 @Composable

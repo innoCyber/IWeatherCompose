@@ -26,6 +26,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.iweathercompose.screens.NetworkConnectivityState
 import com.example.iweathercompose.screens.WeatherHomeScreen
+import com.example.iweathercompose.screens.WeatherHomeUiState
 import com.example.iweathercompose.screens.viewmodel.WeatherHomeViewModel
 import com.example.iweathercompose.ui.theme.IWeatherComposeTheme
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -44,7 +45,8 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun WeatherApp(client: FusedLocationProviderClient, modifier: Modifier = Modifier) {
-        val weatherHomeViewModel: WeatherHomeViewModel = viewModel(factory = WeatherHomeViewModel.Factory)
+        val weatherHomeViewModel: WeatherHomeViewModel =
+            viewModel(factory = WeatherHomeViewModel.Factory)
         val context = LocalContext.current
         var permissionGranted by remember { mutableStateOf(false) }
         val launcher = rememberLauncherForActivityResult(
@@ -77,8 +79,12 @@ class MainActivity : ComponentActivity() {
         val networkConnectivityState by weatherHomeViewModel.networkConnectivityState.collectAsState()
         IWeatherComposeTheme {
             WeatherHomeScreen(
+                onRefresh = {
+                    weatherHomeViewModel.uiState = WeatherHomeUiState.Loading
+                    weatherHomeViewModel.getWeatherData()
+                },
                 isNetworkAvailable = networkConnectivityState == NetworkConnectivityState.Available,
-                weatherHomeViewModel.uiState
+                uiState = weatherHomeViewModel.uiState
             )
         }
 
