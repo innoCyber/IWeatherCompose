@@ -44,7 +44,7 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun WeatherApp(client: FusedLocationProviderClient, modifier: Modifier = Modifier) {
-        val weatherHomeViewModel: WeatherHomeViewModel = viewModel()
+        val weatherHomeViewModel: WeatherHomeViewModel = viewModel(factory = WeatherHomeViewModel.Factory)
         val context = LocalContext.current
         var permissionGranted by remember { mutableStateOf(false) }
         val launcher = rememberLauncherForActivityResult(
