@@ -25,57 +25,66 @@ import com.example.iweathercompose.screens.Weather
 import com.example.iweathercompose.screens.WeatherHomeUiState
 import com.example.iweathercompose.utils.getCurrentWeatherUrl
 import com.example.iweathercompose.utils.getForecastWeatherUrl
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-
-class WeatherHomeViewModel (private val networkConnectivityRepository: NetworkConnectivityRepository): ViewModel(){
-    private val weatherRepository: WeatherRepository = WeatherRepositoryImpl()
-    var uiState : WeatherHomeUiState by mutableStateOf(WeatherHomeUiState.Loading)
-    private var longitude : Number = 0.0
-    private var latitude : Number = 0.0
-    val networkConnectivityState: StateFlow<NetworkConnectivityState> = networkConnectivityRepository.networkConnectivityState
-    val exceptionHandler = CoroutineExceptionHandler { _ , _ ->
+@HiltViewModel
+class WeatherHomeViewModel @Inject constructor(
+    private val networkConnectivityRepository: NetworkConnectivityRepository,
+    private val weatherRepository: WeatherRepository
+) : ViewModel() {
+    var uiState: WeatherHomeUiState by mutableStateOf(WeatherHomeUiState.Loading)
+    private var longitude: Number = 0.0
+    private var latitude: Number = 0.0
+    val networkConnectivityState: StateFlow<NetworkConnectivityState> =
+        networkConnectivityRepository.networkConnectivityState
+    val exceptionHandler = CoroutineExceptionHandler { _, _ ->
         uiState = WeatherHomeUiState.Error
     }
 
-    private suspend fun getCurrentWeather() : CurrentWeather{
-        return weatherRepository.getCurrentWeather(getCurrentWeatherUrl(latitude,longitude))
-    }
-    private suspend fun getForecastWeather() : ForecastWeather{
-        return weatherRepository.getForecastWeather(getForecastWeatherUrl(latitude,longitude ))
+    private suspend fun getCurrentWeather(): CurrentWeather {
+        return weatherRepository.getCurrentWeather(getCurrentWeatherUrl(latitude, longitude))
     }
 
-    fun getWeatherData(){
+    private suspend fun getForecastWeather(): ForecastWeather {
+        return weatherRepository.getForecastWeather(getForecastWeatherUrl(latitude, longitude))
+    }
+
+    fun getWeatherData() {
         viewModelScope.launch(exceptionHandler) {
             uiState = try {
                 val currentWeather = async { getCurrentWeather() }.await()
                 val forecastWeather = async { getForecastWeather() }.await()
-                WeatherHomeUiState.Success(Weather(currentWeather,forecastWeather))
-            }catch (e: Exception){
+                WeatherHomeUiState.Success(Weather(currentWeather, forecastWeather))
+            } catch (e: Exception) {
                 WeatherHomeUiState.Error
             }
         }
     }
 
-    fun setLocation(long: Number, lat: Number){
+    fun setLocation(long: Number, lat: Number) {
         viewModelScope.launch {
             longitude = long
             latitude = lat
         }
     }
 
-    companion object{
-        val Factory : ViewModelProvider.Factory = viewModelFactory {
+  /*  companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[APPLICATION_KEY] as Application)
-                val connectivityManager = application.getSystemService(ConnectivityManager::class.java)
+                val connectivityManager =
+                    application.getSystemService(ConnectivityManager::class.java)
                 WeatherHomeViewModel(
-                    networkConnectivityRepository = DefaultNetworkConnectivityRepository(connectivityManager)
+                    networkConnectivityRepository = DefaultNetworkConnectivityRepository(
+                        connectivityManager
+                    )
                 )
             }
         }
-    }
+    }*/
 }

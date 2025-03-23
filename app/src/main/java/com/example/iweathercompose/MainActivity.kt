@@ -31,7 +31,9 @@ import com.example.iweathercompose.screens.viewmodel.WeatherHomeViewModel
 import com.example.iweathercompose.ui.theme.IWeatherComposeTheme
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +48,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun WeatherApp(client: FusedLocationProviderClient, modifier: Modifier = Modifier) {
         val weatherHomeViewModel: WeatherHomeViewModel =
-            viewModel(factory = WeatherHomeViewModel.Factory)
+            viewModel()
         val context = LocalContext.current
         var permissionGranted by remember { mutableStateOf(false) }
         val launcher = rememberLauncherForActivityResult(

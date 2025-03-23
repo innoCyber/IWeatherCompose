@@ -7,12 +7,13 @@ import com.example.iweathercompose.screens.NetworkConnectivityState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
 
 interface NetworkConnectivityRepository {
     val networkConnectivityState : StateFlow<NetworkConnectivityState>
 }
 
-class DefaultNetworkConnectivityRepository(private val connectivityManager: ConnectivityManager): NetworkConnectivityRepository{
+class DefaultNetworkConnectivityRepository @Inject constructor(private val connectivityManager: ConnectivityManager): NetworkConnectivityRepository{
     private val _networkConnectivityState = MutableStateFlow<NetworkConnectivityState>(NetworkConnectivityState.UnAvailable)
 
     private val callback = object : NetworkCallback(){
